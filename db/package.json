@@ -1,0 +1,23 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "description": "A simple module db",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbertoChamorro/pratices-nodeJS.git"
+  },
+  "author": "@AlbertoChamorro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlbertoChamorro/pratices-nodeJS/issues"
+  },
+  "homepage": "https://github.com/AlbertoChamorro/pratices-nodeJS#readme",
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
+}
