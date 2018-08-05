@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "standard --fix",
-    "test": "npm run lint & set DEBUG=academy:* && ava test/ --verbose",
-    "script:db": "npm run lint & set DEBUG=academy:* && node setup.js"
+    "test": "npm run lint & cross-env DEBUG=academy:* ava test/ --verbose",
+    "script:db": "npm run lint & cross-env DEBUG=academy:* node setup.js"
   },
   "repository": {
     "type": "git",
