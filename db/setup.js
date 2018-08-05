@@ -9,7 +9,6 @@ const db = require('./')
 const prompt = inquirer.createPromptModule()
 
 async function setup () {
-
   const answer = await prompt([
     {
       type: 'confirm',
