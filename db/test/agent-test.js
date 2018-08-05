@@ -4,6 +4,10 @@ const test = require('ava')
 const proxyquire = require('proxyquire')
 const sinon = require('sinon')
 
+const agentFixture = require('./fixtures/agent')
+
+// let single = Object.assign({}, agentFixture.single)
+let id = 1
 let sandbox = null
 let MetricStub = {
   belongsTo: sinon.spy()
@@ -16,7 +20,7 @@ let config = {
 let db = null
 
 test.beforeEach(async () => {
-  sandbox = sinon.sandbox.create()
+  sandbox = sinon.createSandbox()
 
   AgentStub = {
     hasMany: sandbox.spy()
@@ -38,10 +42,15 @@ test('make it pass', async t => {
   t.truthy(db.Agent, 'Agent services should exist')
 })
 
-test.serial('Setup db', async t => {
+test.serial('Setup db', t => {
   t.true(AgentStub.hasMany.called, 'AgentModel.hasMany was executed')
   t.true(AgentStub.hasMany.calledWith(MetricStub), 'Argument should be the MetricStub')
 
   t.true(MetricStub.belongsTo.called, 'MetricStub.belongsTo was executed')
   t.true(MetricStub.belongsTo.calledWith(AgentStub), 'Argument should be the AgentStub')
+})
+
+test.serial('Agent#findById', async t => {
+  let agent = await db.Agent.findById(id)
+  t.deepEqual(agent, agentFixture.byId(id), 'should be the same')
 })
