@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "standard --verbose --fix",
     "test": "npm run lint & cross-env DEBUG=academy:* nyc --reporter=lcov ava test/ --verbose",
-    "script:db": "npm run lint & cross-env DEBUG=academy:* node setup.js"
+    "script:db": "npm run lint & cross-env DEBUG=academy:* node setup.js",
+    "script:db:auto": "npm run lint & cross-env DEBUG=academy:* node setup.js --y"
   },
   "repository": {
     "type": "git",

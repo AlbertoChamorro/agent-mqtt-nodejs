@@ -9,18 +9,19 @@ const db = require('./')
 const prompt = inquirer.createPromptModule()
 
 async function setup () {
-  const answer = await prompt([
-    {
-      type: 'confirm',
-      name: 'setup',
-      message: 'This will destroy your database, are you sure?'
+  if (!verifyProcessArgsForAutomaticCommand()) {
+    const answer = await prompt([
+      {
+        type: 'confirm',
+        name: 'setup',
+        message: 'This will destroy your database, are you sure?'
+      }
+    ])
+
+    if (!answer.setup) {
+      return console.log('Nothing happened :)')
     }
-  ])
-
-  if (!answer.setup) {
-    return console.log('Nothing happened :)')
   }
-
   const config = {
     database: process.env.DB_NAME || 'academydb',
     username: process.env.DB_USER || 'admin',
@@ -35,6 +36,17 @@ async function setup () {
 
   console.log('Success!')
   process.exit(0)
+}
+
+function verifyProcessArgsForAutomaticCommand () {
+  const args = process.argv
+  const parameters = args.slice(2)
+
+  if (!parameters || parameters.length === 0) {
+    return false
+  }
+
+  return true
 }
 
 function handleFatalError (err) {
