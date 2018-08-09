@@ -5,10 +5,25 @@ const chalk = require('chalk')
 const mosca = require('mosca')
 const redis = require('redis')
 
+// module db
+const dbContext = require('db')
+
+const config = {
+  database: process.env.DB_NAME || 'academydb',
+  username: process.env.DB_USER || 'admin',
+  password: process.env.DB_PASSWORD || 'admin',
+  host: process.env.DB_HOST || 'localhost',
+  dialect: 'postgres',
+  logging: s => debug(s)
+}
+
+let Agent, Metric = null
+
 const backend = {
   type: 'redis',
   redis,
-  return_buffers: true
+  port: 6379,
+  return_buffers: true // to handle binary payloads
 }
 
 const settings = {
@@ -34,7 +49,10 @@ server.on('published', (packet, client) => {
   debug(`Payload: ${packet.payload}`)
 })
 
-server.on('ready', () => {
+server.on('ready', async () => {
+  const services = await dbContext(config).catch(handleFatalError)
+  Agent = services.Agent
+  Metric = services.Metric
   console.log(`${chalk.green('[academy-mqtt]')} server is running`)
 })
 
