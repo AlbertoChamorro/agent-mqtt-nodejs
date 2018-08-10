@@ -1,0 +1,30 @@
+{
+  "name": "mqtt",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Simple IoT Plataform - MQTT Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node server.js",
+    "start-dev": "cross-env DEBUG=academy:* nodemon server.js",
+    "lint": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbertoChamorro/pratices-nodeJS.git"
+  },
+  "author": "@AlbertoChamorro",
+  "license": "MIT",
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "nodemon": "^1.18.3",
+    "standard": "^11.0.1"
+  },
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "debug": "^3.1.0",
+    "mosca": "^2.8.3",
+    "db": "file:../db",
+    "redis": "^2.8.0"
+  }
+}
