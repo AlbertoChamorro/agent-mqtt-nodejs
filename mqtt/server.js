@@ -41,8 +41,31 @@ server.on('clientConnected', client => {
   clients.set(client.id, null)
 })
 
-server.on('clientDisconnected', client => {
+server.on('clientDisconnected', async (client) => {
   debug(`Client Disconnected: ${client.id}`)
+  const agent = clients.get(client.id)
+  if (agent) {
+    //Mark agent as disconnected
+    agent.connected = false
+    try {
+      await Agent.createOrUpdate(agent)
+    } catch (e) {
+      handleError(e)
+    }
+
+    // Delete agent from Clients list
+    clients.delete(client.id)
+    server.publish({
+      topic: 'agent/disconnected',
+      payload: JSON.stringify({
+        agent: {
+          uuid: agent.uuid
+        }
+      })
+    })
+
+    debug(`Client ${client.id} associated to Agent with (${agent.uuid}) marked as disconnected`)
+  }
 })
 
 // npx mqtt -v
@@ -50,14 +73,14 @@ server.on('clientDisconnected', client => {
 // -t: topic || -m: message
 server.on('published', async (packet, client) => {
   debug(`Received: ${packet.topic}`)
-
+  
   switch (packet.topic) {
     case 'agent/connected':
     case 'agent/disconnected':
-      debug(`Payload: ${packet.payload}`)
+      debug(`connected/disconnected with payload: ${packet.payload}`)
       break
     case 'agent/message':
-      debug(`Payload: ${packet.payload}`)
+      debug(`publish client on server with payload: ${packet.payload}`)
       const payload = parsePayload(packet.payload)
       if (payload) {
         payload.agent.connected = true
@@ -85,6 +108,18 @@ server.on('published', async (packet, client) => {
               }
             })
           })
+        }
+
+        // Store Metric
+        for (let metric of payload.metrics) {
+          let m 
+          try {
+            m = await Metric.create(agent.uuid, metric)
+          } catch (e) {
+            return handleError(e)
+          }
+
+          debug(`Metric ${m.id} saved on agent ${agent.uuid}`)
         }
       }
       break
