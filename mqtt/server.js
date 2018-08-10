@@ -5,6 +5,8 @@ const chalk = require('chalk')
 const mosca = require('mosca')
 const redis = require('redis')
 
+const { parsePayload } = require('./utils')
+
 // module db
 const dbContext = require('db')
 
@@ -17,7 +19,7 @@ const config = {
   logging: s => debug(s)
 }
 
-let Agent, Metric = null
+let Agent, Metric
 
 const backend = {
   type: 'redis',
@@ -32,9 +34,11 @@ const settings = {
 }
 
 const server = new mosca.Server(settings)
+const clients = new Map()
 
 server.on('clientConnected', client => {
   debug(`Client Connected: ${client.id}`)
+  clients.set(client.id, null)
 })
 
 server.on('clientDisconnected', client => {
@@ -44,9 +48,47 @@ server.on('clientDisconnected', client => {
 // npx mqtt -v
 // mqtt pub -t 'agent/message' -h localhost -m 'hello academy app'
 // -t: topic || -m: message
-server.on('published', (packet, client) => {
+server.on('published', async (packet, client) => {
   debug(`Received: ${packet.topic}`)
-  debug(`Payload: ${packet.payload}`)
+
+  switch (packet.topic) {
+    case 'agent/connected':
+    case 'agent/disconnected':
+      debug(`Payload: ${packet.payload}`)
+      break
+    case 'agent/message':
+      debug(`Payload: ${packet.payload}`)
+      const payload = parsePayload(packet.payload)
+      if (payload) {
+        payload.agent.connected = true
+        let agent
+        try {
+          agent = await Agent.createOrUpdate(payload.agent)
+        } catch (e) {
+          return handleError(e)
+        }
+
+        debug(`Agent ${agent.uuid} saved`)
+
+        // Notify agent is connected
+        if (!clients.get(client.id)) {
+          clients.set(client.id, agent)
+          server.publish({
+            topic: 'agent/connected',
+            payload: JSON.stringify({
+              agent: {
+                uuid: agent.uuid,
+                name: agent.name,
+                hostname: agent.hostname,
+                pid: agent.pid,
+                connected: agent.connected
+              }
+            })
+          })
+        }
+      }
+      break
+  }
 })
 
 server.on('ready', async () => {
@@ -66,3 +108,8 @@ function handleFatalError (err) {
 
 process.on('uncaughtException', handleFatalError)
 process.on('unhandledRejection', handleFatalError)
+
+function handleError (err) {
+  console.error(`${chalk.red('[error]')} ${err.message}`)
+  console.error(err.stack)
+}
