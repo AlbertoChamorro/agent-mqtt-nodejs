@@ -1,10 +1,4 @@
-# Academy-agent
-
-## Usage
-
-``` js
-
-const AcademyAgent = require('academy-agent')
+const AcademyAgent = require('../')
 
 const agent = new AcademyAgent({
   name: 'myapp',
@@ -42,7 +36,4 @@ function handler (payload) {
   console.log(payload)
 }
 
-setTimeout(() => agent.disconnect(), 20000) // 20 seconds
-
-
-```
+setTimeout(() => agent.disconnect(), 10000) // 10 seconds
