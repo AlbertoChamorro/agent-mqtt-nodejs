@@ -45,7 +45,7 @@ server.on('clientDisconnected', async (client) => {
   debug(`Client Disconnected: ${client.id}`)
   const agent = clients.get(client.id)
   if (agent) {
-    //Mark agent as disconnected
+    // Mark agent as disconnected
     agent.connected = false
     try {
       await Agent.createOrUpdate(agent)
@@ -71,9 +71,11 @@ server.on('clientDisconnected', async (client) => {
 // npx mqtt -v
 // mqtt pub -t 'agent/message' -h localhost -m 'hello academy app'
 // -t: topic || -m: message
+// test example with database: mqtt pub -t 'agent/message' -m '{"agent": {"uuid": "yyy-client-xx", "name": "alberto chamorro", "username": "Achamorro", "pid": 10, "hostname": "coreNight.nic"}, "metrics": [{"type": "memoria", "value": "1001"}, {"type": "temp", "value": "33"}]}'
+
 server.on('published', async (packet, client) => {
   debug(`Received: ${packet.topic}`)
-  
+
   switch (packet.topic) {
     case 'agent/connected':
     case 'agent/disconnected':
@@ -112,7 +114,7 @@ server.on('published', async (packet, client) => {
 
         // Store Metric
         for (let metric of payload.metrics) {
-          let m 
+          let m
           try {
             m = await Metric.create(agent.uuid, metric)
           } catch (e) {
@@ -122,6 +124,7 @@ server.on('published', async (packet, client) => {
           debug(`Metric ${m.id} saved on agent ${agent.uuid}`)
         }
       }
+
       break
   }
 })
