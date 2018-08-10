@@ -1,16 +1,19 @@
 {
-  "name": "agent",
+  "name": "academy-agent",
   "version": "1.0.0",
   "private": true,
   "description": "A simple IoT Plataform - Agent",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard --fix"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AlbertoChamorro/pratices-nodeJS.git"
   },
   "author": "@AlbertoChamorro",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
 }
