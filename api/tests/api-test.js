@@ -1,10 +1,16 @@
 'use strict'
 
 const test = require('ava')
+const util = require('util')
+
 const request = require('supertest')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
+const auth = require('../auth')
+const config = require('../config')
+const sign = util.promisify(auth.sign)
 
+let token = null
 let sandbox = null
 let server = null
 let dbStub = null
@@ -14,6 +20,7 @@ let MetricStub = {}
 let AgentFixtures = require('./fixtures/agent')
 
 test.beforeEach(async () => {
+  token = await sign({ admin: true, username: 'Achamorro' }, config.auth.secret)
   sandbox = sinon.createSandbox()
 
   dbStub = sandbox.stub()
@@ -41,6 +48,7 @@ test.afterEach(async () => {
 test.serial.cb('api/agents', t => {
   request(server)
     .get('/api/agents')
+    .set('Authorization', `Bearer ${token}`)
     .expect(200)
     .expect('Content-type', /json/)
     .end((err, res) => {
@@ -52,6 +60,8 @@ test.serial.cb('api/agents', t => {
       t.end() // when used test.cb()
     })
 })
+
+test.serial.todo('/api/agents - not authorized')
 
 test.serial.todo('/api/agents/:uuid')
 test.serial.todo('/api/agents/:uuid - not found')
