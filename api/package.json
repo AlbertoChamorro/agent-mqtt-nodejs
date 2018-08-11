@@ -1,0 +1,35 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple IoT Plataform - Api",
+  "main": "server.js",
+  "scripts": {
+    "start": "NODE_ENV=production node server.js",
+    "start-dev": "cross-env DEBUG=academy:* nodemon server.js",
+    "lint": "standard --fix",
+    "test": "npm run lint & cross-env DEBUG=academy:* ava tests/ --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbertoChamorro/pratices-nodeJS.git"
+  },
+  "author": "@AlbertoChamorro",
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "cross-env": "^5.2.0",
+    "nodemon": "^1.18.3",
+    "proxyquire": "^2.0.1",
+    "sinon": "^6.1.5",
+    "standard": "^11.0.1",
+    "supertest": "^3.1.0"
+  },
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "db": "file:../db",
+    "debug": "^3.1.0",
+    "express": "^4.16.3",
+    "express-asyncify": "^1.0.0"
+  }
+}
