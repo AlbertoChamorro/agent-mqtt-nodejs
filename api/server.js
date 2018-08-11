@@ -17,13 +17,27 @@ app.use('/api', routes)
 
 // Express Error Handler
 app.use((err, req, res, next) => {
+ // console.log(err)
   debug(`${chalk.red('[error]:')} ${err.message}`)
 
   if (err.message.match(/not found/)) {
-    return res.status(404).send({ error: err.message })
+    return res.status(404).send({ 
+      error: err.message,
+      code: err.status
+    })
   }
 
-  res.status(500).send({ error: err.message })
+  if (err.message.match(/authorization/)) {
+    return res.status(401).send({ 
+      error: err.message,
+      code: err.status
+    })
+  }
+
+  res.status(500).send({ 
+    error: err.message,
+    code: err.status
+  })
 })
 
 function handleFatalError (err) {

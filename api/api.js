@@ -5,6 +5,8 @@ const express = require('express')
 const asyncify = require('express-asyncify')
 
 const api = asyncify(express.Router())
+
+const auth = require('express-jwt')
 const db = require('db')
 const config = require('./config')
 
@@ -25,13 +27,24 @@ api.use('*', async (req, res, next) => {
   next()
 })
 
-api.get('/agents', async (req, res, next) => {
+api.get('/agents', auth(config.auth) , async (req, res, next) => {
   debug(`A request has come to /agents`)
+
+  //console.log(req)
+  const { user } = req
+
+  if (!user || !user.username) {
+    return next(new Error ('Not authorization'))
+  }
 
   let agents = []
 
   try {
-    agents = await Agent.findConnected()
+    if (user.admin) {
+      agents = await Agent.findConnected()
+    }else {
+      agents = await Agent.findByUsername(user.username)
+    }
   } catch (err) {
     next(err)
   }
