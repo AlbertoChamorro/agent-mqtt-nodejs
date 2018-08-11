@@ -27,14 +27,14 @@ api.use('*', async (req, res, next) => {
   next()
 })
 
-api.get('/agents', auth(config.auth) , async (req, res, next) => {
+api.get('/agents', auth(config.auth), async (req, res, next) => {
   debug(`A request has come to /agents`)
 
-  //console.log(req)
+  // console.log(req)
   const { user } = req
 
   if (!user || !user.username) {
-    return next(new Error ('Not authorization'))
+    return next(new Error('Not authorization'))
   }
 
   let agents = []
@@ -42,7 +42,7 @@ api.get('/agents', auth(config.auth) , async (req, res, next) => {
   try {
     if (user.admin) {
       agents = await Agent.findConnected()
-    }else {
+    } else {
       agents = await Agent.findByUsername(user.username)
     }
   } catch (err) {
