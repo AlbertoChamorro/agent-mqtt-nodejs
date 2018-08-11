@@ -3,12 +3,14 @@
 const debug = require('debug')('academy:api')
 const chalk = require('chalk')
 const http = require('http')
+
+const asyncify = require('express-asyncify')
 const express = require('express')
 
 const routes = require('./api')
 
 const port = process.env.PORT || 3000
-const app = express()
+const app = asyncify(express())
 const server = http.createServer(app)
 
 app.use('/api', routes)

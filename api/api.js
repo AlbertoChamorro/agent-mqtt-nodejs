@@ -2,8 +2,28 @@
 
 const debug = require('debug')('academy:api:routes')
 const express = require('express')
+const asyncify = require('express-asyncify')
 
-const api = express.Router()
+const api = asyncify(express.Router())
+const db = require('db')
+const config = require('./config')
+
+let services, Agent, Metric
+
+api.use('*', async (req, res, next) => {
+  if (!services) {
+    debug('connecting to database in api')
+    try {
+      services = await db(config)
+    } catch (err) {
+      return next(err)
+    }
+    
+    Agent = services.Agent
+    Metric = services.Metric
+  }
+  next()
+})
 
 api.get('/agents', (req, res) => {
   debug(`A request has come to /agents`)
